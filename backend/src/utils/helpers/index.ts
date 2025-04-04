@@ -1,4 +1,10 @@
+import { User } from "@/models/user";
 import jwt from "jsonwebtoken";
+import { emailTemplates } from "../constants";
+import mongoose, { ObjectId } from "mongoose";
+import { EmailTemplate } from "@/models/EmailTemplate";
+import { name } from "agenda/dist/agenda/name";
+import { EmailTemplateType } from "../types";
 
 export function createResponse(
   success: boolean,
@@ -38,7 +44,42 @@ export const verifyToken = (token: string) => {
 export function generateOTP(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
-
+// 
 export const isOTPExpired = (expiresAt: Date): boolean => {
   return new Date() > new Date(expiresAt);
 };
+
+//function to create default platform email
+export const createDefaultEmailTemplate = async () => {
+  try {
+    const admin = await User.findOne({ role: "ADMIN" });
+
+    if (!admin) {
+      throw Error("Please create a admin first to create default Email templates")
+    }
+
+    emailTemplates.map(async (data) => {
+      const emailTemplatedata: EmailTemplateType & { isCompanyTemplate: boolean, user: any } = {
+        name: data.name.trim(),
+        subject: data.subject.trim(),
+        html: data.html.trim(),
+        mergeTags: data.mergeTags,
+        isCompanyTemplate: true,
+        user: admin._id
+      }
+      await EmailTemplate.findOneAndUpdate(
+        { name: data.name, user: admin.id },
+        { $setOnInsert: { ...emailTemplatedata, user: admin.id } },
+        { upsert: true, new: true }
+      );
+
+    })
+
+    console.log("Default Email create Successfully")
+
+  } catch (e: any) {
+    console.log("error creatind default email templates", e?.message)
+  }
+}
+
+

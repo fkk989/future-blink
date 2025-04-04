@@ -16,7 +16,7 @@ const UserSchema = new Schema<User>({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   isVerified: { type: Boolean, required: true, default: false },
-  role: { type: String, required: true, default: "user" },
+  role: { type: String, required: true, default: "USER" },
 }, { timestamps: true });
 
 // Hashing password before saving

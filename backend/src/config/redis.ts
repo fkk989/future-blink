@@ -1,4 +1,6 @@
 import { Redis, RedisOptions } from "ioredis";
+import dotenv from "dotenv"
+dotenv.config()
 
 const host = process.env.REDIS_HOST;
 const port = parseInt(process.env.REDIS_PORT);
@@ -8,6 +10,7 @@ const password = process.env.REDIS_PASSWORD;
 
 
 export function createRedisClient() {
+
     const options: RedisOptions = {
         host,
         port,

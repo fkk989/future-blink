@@ -6,6 +6,9 @@ import { Request, Response } from "express";
 import { sendMail } from "../services/mailService";
 import { emailTemplates } from "@/utils/constants";
 import { rateLimiter } from "../services/rateLimeter";
+import { EmailTemplate } from "@/models/EmailTemplate";
+import { match } from "assert";
+import { injectMergeTagsFromSchema } from "@/utils/helpers/emailVriableInjector";
 
 // 
 export const sendOtp = async (req: Request<{}, {}, Omit<UserSignupInput, "password">>, res: Response) => {
@@ -49,7 +52,28 @@ export const sendOtp = async (req: Request<{}, {}, Omit<UserSignupInput, "passwo
       { upsert: true, new: true }
     );
 
-    await sendMail(emailTemplates.user_verification(email, name, otp))
+    const emailVerificationTemplate = await EmailTemplate.findOne({
+      name: "Email Verification Template", isCompanyTemplate: true
+    })
+
+    if (!emailVerificationTemplate) {
+      res.status(400).json(createResponse(false, "Email Verification Template not found"))
+      return
+    }
+    const { html, mergeTags } = emailVerificationTemplate
+    const finalTemplateWithMergeTags = injectMergeTagsFromSchema({
+      // @ts-ignore
+      body: html, mergeTags: mergeTags, values: {
+        name,
+        otp,
+        "otp-expiry": process.env.OTP_EXPIRY,
+      }
+    })
+
+    console.log("template", finalTemplateWithMergeTags)
+
+
+    await sendMail({ to: email, subject: emailVerificationTemplate.subject, html: finalTemplateWithMergeTags, })
 
 
     res.status(200).json(createResponse(true, "OTP sent successfully"))
