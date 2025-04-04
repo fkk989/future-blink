@@ -1,18 +1,23 @@
 import mongoose, { Schema, Document } from "mongoose";
 import bcrypt from "bcryptjs";
+import { boolean } from "zod";
 
-export interface IUser extends Document {
+export interface User extends Document {
   name: string;
   email: string;
   password: string;
+  isVerified: boolean;
+  role: string
   comparePassword(enteredPassword: string): Promise<boolean>;
 }
 
-const UserSchema = new Schema<IUser>({
+const UserSchema = new Schema<User>({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-});
+  isVerified: { type: Boolean, required: true, default: false },
+  role: { type: String, required: true, default: "user" },
+}, { timestamps: true });
 
 // Hashing password before saving
 UserSchema.pre("save", async function (next) {
@@ -28,4 +33,4 @@ UserSchema.methods.comparePassword = async function (enteredPassword: string) {
 };
 
 
-export const User =  mongoose.model<IUser>("User", UserSchema);
+export const User = mongoose.model<User>("User", UserSchema);

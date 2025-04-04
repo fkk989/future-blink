@@ -1,13 +1,14 @@
 import express, { Express } from "express";
 import cors from "cors";
 import { createResponse } from "@/utils/helpers";
-import userRouter from "./routes/auth";
+import { authRouter } from "./routes/authRoutes";
 
 export const app: Express = express();
 
 app.use(cors(), express.json());
 
-app.use("/api/auth", userRouter)
+
+app.use("/api/auth", authRouter)
 
 // health Checkup
 app.get("/health", (req, res) => {
