@@ -174,11 +174,12 @@ export const login = async (req: Request<{}, {}, UserLoginInput>, res: Response)
       res.status(400).json(createResponse(false, "Incorrect Password", { error: { password: "Incorrect Password" } }))
     }
 
-    // @ts-ignore
-    delete user.password
 
     // generating user token for authentication
     const token = generateToken({ userId: user.id, name: user.name, email: user.email, role: (user.role as ROLES) })
+
+    // deleting user sensitive data
+    user.password = ""
 
     res.status(200).json(createResponse(true, "logged in successfully", { data: user, token }))
     return;
