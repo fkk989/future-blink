@@ -1,25 +1,16 @@
-import { EmailTemplateType } from "../types";
-
-
-type InjectMergeTagParams = {
+type InjectTagsFromValues = {
   body: string;
-  mergeTags: EmailTemplateType["mergeTags"];
   values: Record<string, string>;
 };
 
-export function injectMergeTagsFromSchema({
+export function injectVariables({
   body,
-  mergeTags,
   values,
-}: InjectMergeTagParams): string {
-  
+}: InjectTagsFromValues): string {
   let finalBody = body;
-  if (!mergeTags) return finalBody;
-  for (const tag of mergeTags) {
-    const value = values[tag.tag];
-    if (!value) continue; // skip if no value provided for this tag
 
-    const placeholderRegex = new RegExp(tag.placeholder.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g');
+  for (const [key, value] of Object.entries(values)) {
+    const placeholderRegex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
     finalBody = finalBody.replace(placeholderRegex, value);
   }
 

@@ -1,7 +1,8 @@
-import { EmailTemplateType } from "./types";
+import { EmailSchemaType } from "./validation/emailTemplate";
 
 
-export const emailTemplates: EmailTemplateType[] = [
+
+export const emailTemplates: EmailSchemaType[] = [
   {
     name: "Email Verification Template",
     subject: "Verify your email address",
@@ -18,11 +19,6 @@ export const emailTemplates: EmailTemplateType[] = [
         <p style="color: #888;">– The Team</p>
       </div>
     `,
-    mergeTags: [
-      { tag: "name", placeholder: "{{name}}", description: "Recipient's full name" },
-      { tag: "otp", placeholder: "{{otp}}", description: "One-time password" },
-      { tag: "otp-expiry", placeholder: "{{otp-expiry}}", description: "time on which otp expire" },
-    ]
   },
 
 ]

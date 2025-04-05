@@ -1,21 +1,19 @@
 import { User } from "@/models/user";
 import jwt from "jsonwebtoken";
 import { emailTemplates } from "../constants";
-import mongoose, { ObjectId } from "mongoose";
-import { EmailTemplate } from "@/models/EmailTemplate";
-import { name } from "agenda/dist/agenda/name";
-import { EmailTemplateType } from "../types";
+import { EmailTemplateModel } from "@/models/emailTemplate";
+import { UserTokenType } from "../types";
+import { EmailSchemaType } from "../validation/emailTemplate";
 
 export function createResponse(
   success: boolean,
   message: string,
-  error?: { [key: string]: any },
   props?: Object
 ) {
-  return { success, message, error, ...props };
+  return { success, message, ...props };
 }
 
-export const generateToken = (user: { userId: string, name: string, email: string, role: string }) => {
+export const generateToken = (user: UserTokenType) => {
   if (!process.env.JWT_SECRET) {
     throw new Error("JWT_SECRET is not defined in environment variables");
   }
@@ -59,15 +57,14 @@ export const createDefaultEmailTemplate = async () => {
     }
 
     emailTemplates.map(async (data) => {
-      const emailTemplatedata: EmailTemplateType & { isCompanyTemplate: boolean, user: any } = {
+      const emailTemplatedata: EmailSchemaType & { user: any } = {
         name: data.name.trim(),
         subject: data.subject.trim(),
         html: data.html.trim(),
-        mergeTags: data.mergeTags,
         isCompanyTemplate: true,
         user: admin._id
       }
-      await EmailTemplate.findOneAndUpdate(
+      await EmailTemplateModel.findOneAndUpdate(
         { name: data.name, user: admin.id },
         { $setOnInsert: { ...emailTemplatedata, user: admin.id } },
         { upsert: true, new: true }

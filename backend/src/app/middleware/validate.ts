@@ -1,5 +1,4 @@
 import { createResponse } from "@/utils/helpers";
-import { name } from "agenda/dist/agenda/name";
 import { Request, Response, NextFunction } from "express";
 import { ZodSchema } from "zod";
 
@@ -20,7 +19,7 @@ export const validate =
           errors[fieldName] = fieldsErrors[fieldName] && fieldsErrors[fieldName][0] || ""
         })
 
-        res.status(400).json(createResponse(false, "Invalid Input", errors));
+        res.status(400).json(createResponse(false, "Invalid Input", { errors }));
         return;
       }
       next();

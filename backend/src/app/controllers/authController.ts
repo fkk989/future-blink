@@ -4,11 +4,10 @@ import { createResponse, generateOTP, generateToken, isOTPExpired } from "@/util
 import { EmailVerification, UserLoginInput, UserSignupInput } from "@/utils/validation/auth";
 import { Request, Response } from "express";
 import { sendMail } from "../services/mailService";
-import { emailTemplates } from "@/utils/constants";
 import { rateLimiter } from "../services/rateLimeter";
-import { EmailTemplate } from "@/models/EmailTemplate";
-import { match } from "assert";
-import { injectMergeTagsFromSchema } from "@/utils/helpers/emailVriableInjector";
+import { EmailTemplateModel } from "@/models/emailTemplate";
+import { injectVariables } from "@/utils/helpers/emailVriableInjector";
+import { ROLES } from "@/utils/types";
 
 // 
 export const sendOtp = async (req: Request<{}, {}, Omit<UserSignupInput, "password">>, res: Response) => {
@@ -39,7 +38,7 @@ export const sendOtp = async (req: Request<{}, {}, Omit<UserSignupInput, "passwo
       return
     }
     if (user.isVerified) {
-      res.status(400).json(createResponse(false, "User exists with this email", { email: "User exists with this email" }))
+      res.status(400).json(createResponse(false, "User already verified", { email: "User already verified" }))
       return;
     }
     //
@@ -52,7 +51,7 @@ export const sendOtp = async (req: Request<{}, {}, Omit<UserSignupInput, "passwo
       { upsert: true, new: true }
     );
 
-    const emailVerificationTemplate = await EmailTemplate.findOne({
+    const emailVerificationTemplate = await EmailTemplateModel.findOne({
       name: "Email Verification Template", isCompanyTemplate: true
     })
 
@@ -60,10 +59,10 @@ export const sendOtp = async (req: Request<{}, {}, Omit<UserSignupInput, "passwo
       res.status(400).json(createResponse(false, "Email Verification Template not found"))
       return
     }
-    const { html, mergeTags } = emailVerificationTemplate
-    const finalTemplateWithMergeTags = injectMergeTagsFromSchema({
-      // @ts-ignore
-      body: html, mergeTags: mergeTags, values: {
+    const { html } = emailVerificationTemplate
+    const finalTemplateWithMergeTags = injectVariables({
+      body: html,
+      values: {
         name,
         otp,
         "otp-expiry": process.env.OTP_EXPIRY,
@@ -135,7 +134,7 @@ export const signup = async (req: Request<{}, {}, UserSignupInput>, res: Respons
     const userAlreadyExist = await User.findOne({ email })
 
     if (userAlreadyExist) {
-      res.status(400).json(createResponse(false, "User exists with this email", { email: "User exists with this email" }))
+      res.status(400).json(createResponse(false, "User exists with this email", { error: { email: "User exists with this email" } }))
       return;
     }
 
@@ -160,28 +159,28 @@ export const login = async (req: Request<{}, {}, UserLoginInput>, res: Response)
 
     const user = await User.findOne({ email })
     if (!user) {
-      res.status(400).json(createResponse(false, "Incorrect Email", { email: "Incorrect Email" }))
+      res.status(400).json(createResponse(false, "Incorrect Email", { error: { email: "Incorrect Email" } }))
       return
     }
 
     if (!user.isVerified) {
-      res.status(400).json(createResponse(false, "Email not verified", { email: "User not verified" }))
+      res.status(400).json(createResponse(false, "Email not verified", { error: { email: "User not verified" } }))
       return
     }
 
     const isCorrectPassword = await user.comparePassword(password)
 
     if (!isCorrectPassword) {
-      res.status(400).json(createResponse(false, "Incorrect Password", { password: "Incorrect Password" }))
+      res.status(400).json(createResponse(false, "Incorrect Password", { error: { password: "Incorrect Password" } }))
     }
 
     // @ts-ignore
     delete user.password
 
     // generating user token for authentication
-    const token = generateToken({ userId: user.id, name: user.name, email: user.email, role: user.role })
+    const token = generateToken({ userId: user.id, name: user.name, email: user.email, role: (user.role as ROLES) })
 
-    res.status(200).json(createResponse(true, "logged in successfully", {}, { data: user, token }))
+    res.status(200).json(createResponse(true, "logged in successfully", { data: user, token }))
     return;
   } catch (e: any) {
     res.status(400).json(createResponse(false, `${e?.message}`))
