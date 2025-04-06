@@ -2,11 +2,13 @@ import { z } from "zod";
 
 
 export const NodeBodySchema = z.object({
+  leadsList: z.array(z.string()).min(1, { message: "Please attach a lead list to create a sequence" }),
+  scheduledAt: z.preprocess((val) => new Date(val as string), z.date()),
   nodes: z.array(z.object({
     type: z.enum(["EMAIL", "DELAY"]),
     order: z.number(),
     emailTemplate: z.string().optional(),
-    delayInMinutes: z.number().optional(),
+    delayTimeInMilleseconds: z.number().optional(),
   }), { required_error: "required: { type: EMAIL | DELAY, order: number , emailTemplate: string, delayInMinutes:number }" })
 })
 

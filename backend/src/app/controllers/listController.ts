@@ -33,16 +33,18 @@ export async function createLeadList(req: AuthenticatedRequest<{}, {}, LeadType>
   }
 }
 
-export async function updateLead(req: AuthenticatedRequest<{ id: string }, {}, ListType>, res: Response) {
+export async function updateListData(req: AuthenticatedRequest<{ id: string }, {}, ListType>, res: Response) {
   try {
     const listId = req.params.id
+    const logedInUser = req?.user!
+    const { data } = req.body
 
-    if (!listId) {
-      res.status(400).json(createResponse(false, "Please provide a id parameter for List id"))
+    const list = await ListModel.findOne({ _id: listId, user: logedInUser.userId })
+
+    if (!list) {
+      res.status(400).json(createResponse(false, "No List Found"))
       return
     }
-
-    const { data } = req.body
 
     const leadData = await ListDataModel.findOneAndUpdate(
       { list: listId },
