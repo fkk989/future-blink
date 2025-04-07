@@ -1,7 +1,7 @@
-import { EmailTemplateModel } from "@/models/emailTemplate";
-import { createResponse } from "@/utils/helpers";
-import { AuthenticatedRequest, } from "@/utils/types";
-import { EmailSchemaType } from "@/utils/validation/emailTemplate";
+import { EmailTemplateModel } from "../../models/emailTemplate";
+import { createResponse } from "../../utils/helpers";
+import { AuthenticatedRequest, } from "../../utils/types";
+import { EmailSchemaType } from "../../utils/validation/emailTemplate";
 import { Response } from "express";
 
 export async function getEmailTemplate(req: AuthenticatedRequest<{}, {}, EmailSchemaType>, res: Response) {
@@ -11,6 +11,22 @@ export async function getEmailTemplate(req: AuthenticatedRequest<{}, {}, EmailSc
     const templates = await EmailTemplateModel.find({ user: logedInUser.userId })
 
     res.status(200).json(createResponse(true, "email template fetched", { data: { templates } }))
+  } catch (e: any) {
+    res.status(400).json(createResponse(false, e?.message))
+  }
+}
+export async function getEmailTemplateById(req: AuthenticatedRequest<{ id: string }, {}, EmailSchemaType>, res: Response) {
+  try {
+    const logedInUser = req?.user!
+    const emailId = req.params.id
+
+    const template = await EmailTemplateModel.findById(emailId)
+    if (!template) {
+      res.status(400).json(createResponse(false, "No template found"))
+      return
+    }
+
+    res.status(200).json(createResponse(true, "email template fetched", { data: { template } }))
   } catch (e: any) {
     res.status(400).json(createResponse(false, e?.message))
   }

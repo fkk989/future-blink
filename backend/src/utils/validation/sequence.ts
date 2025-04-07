@@ -6,7 +6,6 @@ export const NodeBodySchema = z.object({
   scheduledAt: z.preprocess((val) => new Date(val as string), z.date()),
   nodes: z.array(z.object({
     type: z.enum(["EMAIL", "DELAY"]),
-    order: z.number(),
     emailTemplate: z.string().optional(),
     delayTimeInMilleseconds: z.number().optional(),
   }), { required_error: "required: { type: EMAIL | DELAY, order: number , emailTemplate: string, delayInMinutes:number }" })

@@ -12,7 +12,6 @@ declare global {
       SMTP_USER: string;
       SMTP_PASS: string;
       OTP_EXPIRY: string;
-      MAX_OTP_LIMIT: string;
       REDIS_HOST: string;
       REDIS_PORT: string;
       REDIS_PASSWORD: string;

@@ -1,13 +1,25 @@
 import { Response } from "express";
-import { AuthenticatedRequest, Sequence } from "@/utils/types";
-import { createResponse } from "@/utils/helpers";
-import { SequenceModel } from "@/models/sequences";
-import { SequenceType, NodeBodyType } from "@/utils/validation/sequence";
-import { ListDataModel, ListModel } from "@/models/list";
+import { AuthenticatedRequest, Sequence } from "../../utils/types";
+import { createResponse } from "../../utils/helpers";
+import { SequenceModel } from "../../models/sequences";
+import { SequenceType, NodeBodyType } from "../../utils/validation/sequence";
+import { ListDataModel, ListModel } from "../../models/list";
 import mongoose from "mongoose";
 import { scheduleASequence } from "../services/agendaService";
 // 
 
+export async function getSequenceById(req: AuthenticatedRequest<{ id: string }>, res: Response) {
+  try {
+    const logedInUser = req?.user!
+    const sequenceId = req.params.id
+
+    const sequence = await SequenceModel.findById(sequenceId)
+
+    res.status(200).json(createResponse(true, "sequences fetched successfully", { data: { sequence } }))
+  } catch (e: any) {
+    res.status(400).json(createResponse(false, e?.message))
+  }
+}
 
 export async function getSequences(req: AuthenticatedRequest, res: Response) {
   try {
@@ -78,7 +90,7 @@ export async function createOrUpdateNodes(req: AuthenticatedRequest<{ id: string
 
     const sequence = await SequenceModel.findOneAndUpdate({ _id: sequenceId, user: logedInUser.userId }, { nodes, leadsList, scheduledAt: scheduledAtDate }, { new: true }).populate("nodes.emailTemplate")
 
-    
+
     // @ts-ignore
     await scheduleASequence((sequence))
 

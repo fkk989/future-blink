@@ -7,10 +7,6 @@ const NodeSchema = new Schema(
       enum: ["EMAIL", "DELAY"],
       required: true,
     },
-    order: {
-      type: Number,
-      required: true,
-    },
     emailTemplate: {
       type: Types.ObjectId,
       ref: "EmailTemplate",

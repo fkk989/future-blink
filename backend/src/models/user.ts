@@ -8,7 +8,7 @@ export interface User extends Document {
   password: string;
   isVerified: boolean;
   role: string
-  comparePassword(enteredPassword: string): Promise<boolean>;
+  comparePassword(enteredPassword: string, passwordInDb:string ): Promise<boolean>;
 }
 
 const UserSchema = new Schema<User>({
@@ -28,8 +28,9 @@ UserSchema.pre("save", async function (next) {
 });
 
 //this is a Method to compare passwords
-UserSchema.methods.comparePassword = async function (enteredPassword: string) {
-  return bcrypt.compare(enteredPassword, this.password);
+UserSchema.methods.comparePassword = async function (enteredPassword: string, passwordInDb: string) {
+
+  return bcrypt.compare(enteredPassword, passwordInDb);
 };
 
 

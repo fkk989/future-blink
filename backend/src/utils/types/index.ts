@@ -1,9 +1,9 @@
-import { User } from "@/models/user";
+import { User } from "../../models/user";
 import { Request, } from "express";
 export type RateLimitPrefix = "email-verification"
 
 
-export type ROLES = "ADMIN" | "USER" | "EMPLOYEE"
+export type ROLES = "ADMIN" | "USER" | "EMPLOYEE" | "ALL"
 
 
 export interface UserTokenType { userId: string, name: string, email: string, role: ROLES }

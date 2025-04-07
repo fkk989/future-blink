@@ -11,7 +11,7 @@ export const userLoginSchema = userSignupSchema.pick({ email: true, password: tr
 export const otpSchema = userSignupSchema.omit({ password: true })
 export const emailVerificationSchema = z.object({
   email: z.string({ "required_error": "Email is required" }).email({ message: "Invalid email syntax" }),
-  otp: z.number({ "required_error": "OTP is required" }).min(100000, { message: "OTP should be of 6 digits" }).max(999999, { message: "OTP should be of 6 digits" })
+  otp: z.string({ "required_error": "OTP is required" }).min(6, { message: "OTP should be of 6 digits" }).max(6, { message: "OTP should be of 6 digits" })
 })
 // 
 export type UserSignupInput = z.infer<typeof userSignupSchema>;

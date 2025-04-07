@@ -1,4 +1,4 @@
-import { createResponse } from "@/utils/helpers";
+import { createResponse } from "../../utils/helpers";
 import { Request, Response, NextFunction } from "express";
 import { ZodSchema } from "zod";
 

@@ -1,13 +1,14 @@
-import { OTP } from "@/models/otp";
-import { User } from "@/models/user";
-import { createResponse, generateOTP, generateToken, isOTPExpired } from "@/utils/helpers";
-import { EmailVerification, UserLoginInput, UserSignupInput } from "@/utils/validation/auth";
+import { OTP } from "../../models/otp";
+import { User } from "../../models/user";
+import { createResponse, generateOTP, generateToken, isOTPExpired } from "../../utils/helpers";
+import { EmailVerification, UserLoginInput, UserSignupInput } from "../../utils/validation/auth";
 import { Request, Response } from "express";
 import { sendMail } from "../services/mailService";
 import { rateLimiter } from "../services/rateLimeter";
-import { EmailTemplateModel } from "@/models/emailTemplate";
-import { injectVariables } from "@/utils/helpers/emailVriableInjector";
-import { ROLES } from "@/utils/types";
+import { EmailTemplateModel } from "../../models/emailTemplate";
+import { injectVariables } from "../../utils/helpers/emailVriableInjector";
+import { ROLES } from "../../utils/types";
+import { emailTemplates } from "../../utils/constants";
 
 // 
 export const sendOtp = async (req: Request<{}, {}, Omit<UserSignupInput, "password">>, res: Response) => {
@@ -51,28 +52,9 @@ export const sendOtp = async (req: Request<{}, {}, Omit<UserSignupInput, "passwo
       { upsert: true, new: true }
     );
 
-    const emailVerificationTemplate = await EmailTemplateModel.findOne({
-      name: "Email Verification Template", isCompanyTemplate: true
-    })
-
-    if (!emailVerificationTemplate) {
-      res.status(400).json(createResponse(false, "Email Verification Template not found"))
-      return
-    }
-    const { html } = emailVerificationTemplate
-    const finalTemplateWithMergeTags = injectVariables({
-      body: html,
-      values: {
-        name,
-        otp,
-        "otp-expiry": process.env.OTP_EXPIRY,
-      }
-    })
-
-    console.log("template", finalTemplateWithMergeTags)
 
 
-    await sendMail({ to: email, subject: emailVerificationTemplate.subject, html: finalTemplateWithMergeTags, })
+    await sendMail(emailTemplates.user_verification(email, user.name, `${otp}`, process.env.OTP_EXPIRY))
 
 
     res.status(200).json(createResponse(true, "OTP sent successfully"))
@@ -110,7 +92,7 @@ export const verifyEmail = async (req: Request<{}, {}, EmailVerification>, res: 
       return;
     }
 
-    if (Number(otpSentToUser.otp) !== OtpReceivedFromUser) {
+    if (otpSentToUser.otp !== OtpReceivedFromUser) {
       res.status(400).json(createResponse(false, "Incorrect OTP"))
       return
     }
@@ -131,20 +113,26 @@ export const signup = async (req: Request<{}, {}, UserSignupInput>, res: Respons
 
     const { name, email, password } = req.body
 
-    const userAlreadyExist = await User.findOne({ email })
+    const userAlreadyExist = await User.findOne({ email: email.trim() })
 
     if (userAlreadyExist) {
-      res.status(400).json(createResponse(false, "User exists with this email", { error: { email: "User exists with this email" } }))
+      res.status(400).json(createResponse(false, "User exists with this email", { errors: { email: "User exists with this email" } }))
       return;
     }
 
-    await User.create({
-      name,
-      email,
-      password,
+    const user = await User.create({
+      name: name.trim(),
+      email: email.trim(),
+      password: password.trim(),
     })
 
-    res.status(200).json(createResponse(true, "User registered successfully"))
+    user.password = ""
+
+    res.status(200).json(createResponse(true, "User registered successfully", {
+      data: {
+        user
+      }
+    }))
 
   } catch (e: any) {
     res.status(400).json(createResponse(false, `${e?.message}`))
@@ -157,21 +145,27 @@ export const login = async (req: Request<{}, {}, UserLoginInput>, res: Response)
   try {
     const { email, password } = req.body
 
-    const user = await User.findOne({ email })
+    const user = await User.findOne({ email: email.trim() })
     if (!user) {
-      res.status(400).json(createResponse(false, "Incorrect Email", { error: { email: "Incorrect Email" } }))
+      res.status(400).json(createResponse(false, "Incorrect Email", { errors: { email: "Incorrect Email" } }))
       return
     }
 
+    // 
     if (!user.isVerified) {
-      res.status(400).json(createResponse(false, "Email not verified", { error: { email: "User not verified" } }))
+      const tempUser = user
+      tempUser.password = ""
+      // here I am sending true and user details so that user would know that he should verity him first
+      res.status(200).json(createResponse(true, "Email not verified", { data: { tempUser }, errors: { email: "User not verified" } }))
       return
     }
 
-    const isCorrectPassword = await user.comparePassword(password)
+    // Comparing passowrd
+    const isCorrectPassword = await user.comparePassword(password.trim(), user.password)
 
     if (!isCorrectPassword) {
-      res.status(400).json(createResponse(false, "Incorrect Password", { error: { password: "Incorrect Password" } }))
+      res.status(400).json(createResponse(false, "Incorrect Password", { errors: { password: "Incorrect Password" } }))
+      return
     }
 
 
@@ -181,7 +175,7 @@ export const login = async (req: Request<{}, {}, UserLoginInput>, res: Response)
     // deleting user sensitive data
     user.password = ""
 
-    res.status(200).json(createResponse(true, "logged in successfully", { data: user, token }))
+    res.status(200).json(createResponse(true, "logged in successfully", { data: { user }, token }))
     return;
   } catch (e: any) {
     res.status(400).json(createResponse(false, `${e?.message}`))

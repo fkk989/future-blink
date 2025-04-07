@@ -1,5 +1,5 @@
-import { createResponse } from "@/utils/helpers";
-import { AuthenticatedRequest, ROLES } from "@/utils/types";
+import { createResponse } from "../../utils/helpers";
+import { AuthenticatedRequest, ROLES } from "../../utils/types";
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
@@ -36,7 +36,7 @@ export const verifyUserMiddleware = (allowedRoles: ROLES[]) => ((
     // ADMIN is always allowed
     const hasAccess = allowedRoles.includes(userInfo.role);
 
-    if (hasAccess || userInfo.role === "ADMIN") {
+    if (hasAccess || userInfo.role === "ADMIN" || allowedRoles.includes("ALL")) {
       next();
       return;
     }

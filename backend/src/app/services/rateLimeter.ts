@@ -1,6 +1,6 @@
-import { createRedisClient } from "@/config/redis";
+import { createRedisClient } from "../../config/redis";
 import { Redis } from "ioredis";
-import { RateLimitPrefix } from "@/utils/types"
+import { RateLimitPrefix } from "../../utils/types"
 
 export class RateLimiter {
     private client: Redis;

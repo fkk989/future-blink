@@ -10,7 +10,8 @@ const LeadSchema = new Schema({
   list: { type: Types.ObjectId, ref: "List", required: true },
   data: [{
     type: Map,
-    of: String
+    of: String,
+    
   }],
 }, { timestamps: true });
 

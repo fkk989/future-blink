@@ -1,7 +1,7 @@
-import { ListModel, ListDataModel } from "@/models/list";
-import { createResponse } from "@/utils/helpers";
-import { AuthenticatedRequest } from "@/utils/types";
-import { LeadType, ListType } from "@/utils/validation/list";
+import { ListModel, ListDataModel } from "../../models/list";
+import { createResponse } from "../../utils/helpers";
+import { AuthenticatedRequest } from "../../utils/types";
+import { LeadType, ListType } from "../../utils/validation/list";
 import { Response } from "express";
 
 
@@ -9,8 +9,24 @@ export async function getList(req: AuthenticatedRequest<{}, {}, LeadType>, res: 
   try {
     const logedInUser = req?.user!
 
-    const usersList = await ListModel.find({ user: logedInUser.userId }).populate("listData").select("data")
+    const usersList = await ListModel.find({ user: logedInUser.userId }).populate("listData").select("_id name data")
 
+
+    res.status(200).json(createResponse(true, "list fetched successfully", { data: { lists: usersList } }))
+  } catch (e: any) {
+    res.status(400).json(createResponse(false, e?.message))
+  }
+}
+export async function getListById(req: AuthenticatedRequest<{ id: string }, {}, LeadType>, res: Response) {
+  try {
+    const logedInUser = req?.user!
+    const listId = req.params.id
+
+    const usersList = await ListModel.findById(listId).populate("listData")
+    if (!usersList) {
+      res.status(400).json(createResponse(false, "No list found"))
+      return
+    }
 
     res.status(200).json(createResponse(true, "list fetched successfully", { data: { lists: usersList } }))
   } catch (e: any) {

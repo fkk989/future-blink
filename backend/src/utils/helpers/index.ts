@@ -1,7 +1,7 @@
-import { User } from "@/models/user";
+import { User } from "../../models/user";
 import jwt from "jsonwebtoken";
 import { emailTemplates } from "../constants";
-import { EmailTemplateModel } from "@/models/emailTemplate";
+import { EmailTemplateModel } from "../../models/emailTemplate";
 import { UserTokenType } from "../types";
 import { EmailSchemaType } from "../validation/emailTemplate";
 
@@ -47,36 +47,36 @@ export const isOTPExpired = (expiresAt: Date): boolean => {
   return new Date() > new Date(expiresAt);
 };
 
-//function to create default platform email
-export const createDefaultEmailTemplate = async () => {
-  try {
-    const admin = await User.findOne({ role: "ADMIN" });
+// //function to create default platform email
+// export const createDefaultEmailTemplate = async () => {
+//   try {
+//     const admin = await User.findOne({ role: "ADMIN" });
 
-    if (!admin) {
-      throw Error("Please create a admin first to create default Email templates")
-    }
+//     if (!admin) {
+//       throw Error("Please create a admin first to create default Email templates")
+//     }
 
-    emailTemplates.map(async (data) => {
-      const emailTemplatedata: EmailSchemaType & { user: any } = {
-        name: data.name.trim(),
-        subject: data.subject.trim(),
-        html: data.html.trim(),
-        isCompanyTemplate: true,
-        user: admin._id
-      }
-      await EmailTemplateModel.findOneAndUpdate(
-        { name: data.name, user: admin.id },
-        { $setOnInsert: { ...emailTemplatedata, user: admin.id } },
-        { upsert: true, new: true }
-      );
+//     emailTemplates.map(async (data) => {
+//       const emailTemplatedata: EmailSchemaType & { user: any } = {
+//         name: data.name.trim(),
+//         subject: data.subject!.trim(),
+//         html: data.html!.trim(),
+//         isCompanyTemplate: true,
+//         user: admin._id
+//       }
+//       await EmailTemplateModel.findOneAndUpdate(
+//         { name: data.name, user: admin.id },
+//         { $setOnInsert: { ...emailTemplatedata, user: admin.id } },
+//         { upsert: true, new: true }
+//       );
 
-    })
+//     })
 
-    console.log("Default Email create Successfully")
+//     console.log("Default Email create Successfully")
 
-  } catch (e: any) {
-    console.log("error creatind default email templates", e?.message)
-  }
-}
+//   } catch (e: any) {
+//     console.log("error creatind default email templates", e?.message)
+//   }
+// }
 
 

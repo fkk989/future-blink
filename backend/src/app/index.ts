@@ -1,6 +1,6 @@
 import express, { Express } from "express";
 import cors from "cors";
-import { createResponse } from "@/utils/helpers";
+import { createResponse } from "../utils/helpers";
 import { authRouter } from "./routes/authRoutes";
 import { leadListRouter } from "./routes/listRoutes";
 import { emailTemplateRouter } from "./routes/emailTemplateRoutes";

@@ -1,9 +1,9 @@
-import { Sequence } from "@/utils/types";
-import { agenda } from "@/config/agenda";
-import { ListModel } from "@/models/list";
+import { Sequence } from "../../utils/types";
+import { agenda } from "../../config/agenda";
+import { ListModel } from "../../models/list";
 import { Job } from "agenda";
-import { EmailSchemaType } from "@/utils/validation/emailTemplate";
-import { injectVariables } from "@/utils/helpers/emailVriableInjector";
+import { EmailSchemaType } from "../../utils/validation/emailTemplate";
+import { injectVariables } from "../../utils/helpers/emailVriableInjector";
 import { sendMail } from "./mailService";
 
 export async function scheduleASequence(sequence: Sequence, attempt = 1, maxRetries = 5) {
@@ -85,7 +85,7 @@ export function initiateAdendaJob() {
       }
 
       const finalTemplateWithMergeTags = injectVariables({
-        body: emailTemplate.html,
+        body: emailTemplate.html!,
         values: lead
       })
 

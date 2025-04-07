@@ -1,12 +1,14 @@
 import { Router } from "express";
 import { validate } from "../middleware/validate";
 import { verifyUserMiddleware } from "../middleware/verifyUser";
-import { leadInputSchema, listInputSchema } from "@/utils/validation/list";
-import { createLeadList, deleteList, getList, updateListData } from "../controllers/listController";
+import { leadInputSchema, listInputSchema } from "../../utils/validation/list";
+import { createLeadList, deleteList, getList, getListById, updateListData } from "../controllers/listController";
 
 export const leadListRouter = Router()
 
+
 leadListRouter.get("/", verifyUserMiddleware(["USER"]), getList)
+leadListRouter.get("/:id", verifyUserMiddleware(["USER"]), getListById)
 
 // create List 
 leadListRouter.post("/", verifyUserMiddleware(["USER"]), validate(leadInputSchema), createLeadList)
