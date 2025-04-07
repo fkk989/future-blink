@@ -7,13 +7,8 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "skipLibCheck": true,
-    "baseUrl": "./src",
-    "paths": {
-      "@/*": ["*"]
-    },
-    "types": ["node", "express"]
+    "skipLibCheck": true
   },
-  "include": ["src", "tests", "process.env.d.ts"],
+
   "exclude": ["node_modules", "dist", "build"]
 }
