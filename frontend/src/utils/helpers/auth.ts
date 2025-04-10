@@ -19,8 +19,7 @@ interface HandleSubmit<T extends "signup" | "login"> {
 
 export const handleSignup = async ({ resetErrorState, formData, setShowOtpFrom, setErrorState }: HandleSubmit<"signup">) => {
   resetErrorState();
-
-
+  toast.loading("Signing up user", { id: "sign-up" })
   try {
     const response = (
       await axios.post(`${BACKEND_URL}/auth/signup`, formData)
@@ -30,9 +29,11 @@ export const handleSignup = async ({ resetErrorState, formData, setShowOtpFrom, 
       await sendOTP(formData.email, formData.name, () => {
         setShowOtpFrom(true);
       });
+      toast.success("Signed up successfully", { id: "sign-up" })
     }
     //
   } catch (error: any) {
+    toast.error("Signed up successfully", { id: "sign-up" })
     console.log(error.response);
     if (error.response?.data?.errors) {
       setErrorState((pre) => ({ ...pre, ...error.response.data.errors }));
@@ -45,7 +46,7 @@ export const handleSignup = async ({ resetErrorState, formData, setShowOtpFrom, 
 export const handleLogin = async ({ navigate, resetErrorState, formData, setShowOtpFrom, setErrorState, updateUser }: HandleSubmit<"login">) => {
   resetErrorState();
 
-
+  toast.loading("login in", { id: "log-in" })
   try {
     const response = (await axios.post(`${BACKEND_URL}/auth/login`, formData))
       .data;
@@ -63,21 +64,20 @@ export const handleLogin = async ({ navigate, resetErrorState, formData, setShow
           setShowOtpFrom(true);
         });
       } else {
+        toast.success("loged In successfully", { id: "log-in" })
         // if user is verified 
         localStorage.setItem("user-token", response.token)
         navigate("/sequence")
       }
-
-
-
     }
 
   } catch (error: any) {
-    console.log(error.response);
+    toast.error("Error Loging In", { id: "log-in" })
+    console.log("error: ", error.response);
     if (error.response?.data?.errors) {
       setErrorState((pre) => ({ ...pre, ...error.response.data.errors }));
     } else {
-      toast.error(error.response?.message);
+      toast.error(error.response?.message, { id: "log-in" });
     }
   }
 };

@@ -1,4 +1,3 @@
-// AddLeadSourceNode.tsx
 import { Handle, Position } from "@xyflow/react";
 import { IoIosAdd } from "react-icons/io"; // Optional icon library
 import { useReactFlowContext } from "../../../context/ReactFlowContext";

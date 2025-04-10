@@ -18,7 +18,7 @@ const verifyUser_1 = require("../middleware/verifyUser");
 const helpers_1 = require("../../utils/helpers");
 const user_1 = require("../../models/user");
 exports.authRouter = (0, express_1.Router)();
-exports.authRouter.get("/user-login-status", (0, verifyUser_1.verifyUserMiddleware)(["ALL"]), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.authRouter.get("/", (0, verifyUser_1.verifyUserMiddleware)(["ALL"]), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const logedUserId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
     const user = yield user_1.User.findById(logedUserId);

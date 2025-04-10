@@ -1,11 +1,9 @@
 "use client";
 import {
-  Node,
   ReactFlow,
   Background,
   BackgroundVariant,
   MiniMap,
-  useNodesState,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { LeadsModal } from "./modals/LeadsModal";
@@ -17,10 +15,14 @@ import { SequenceStartNode } from "./customNodes/SequenceStartNode";
 import AddSequenceNode from "./customNodes/AddSequenceNode";
 import { AddSequenceModal } from "./modals/AddSequenceModal";
 import {
+  addSequenceX,
   defaultNodes,
+  edgesStyle,
+  SequenceStartId,
 } from "../../utils/constants";
 import { LeadNode } from "./customNodes/LeadNode";
 import { SequenceNode } from "./customNodes/SequenceNode";
+import { useEffect } from "react";
 
 export const edgeTypes = {
   "custom-edge": CustomEdge,
@@ -41,22 +43,68 @@ export function SequenceEditor() {
     openSequenceModal,
     setOpenSequenceModal,
     leadsNode,
-    
     sequenceNode,
     edges,
     onConnect,
+    setEdges,
+    addSequenceNode,
+    setAddSequenceNode,
   } = useReactFlowContext();
 
-  const [addSequenceNode] = useNodesState<Node>([
-    {
-      id: "add-sequence-end",
-      type: "add-sequence-end",
-      position: { x: 290, y: 400 },
-      data: { label: "Leads from\nvery new List" },
-    },
-  ]);
+  // setting Add sequence node edge
+  useEffect(() => {
+    if (sequenceNode.length === 0) {
+      //
+      setEdges((prev) => [
+        ...prev,
+        {
+          id: "add-sequence-end",
+          type: "step",
+          source: SequenceStartId,
+          target: "add-sequence-end",
+          style: edgesStyle,
+        },
+      ]);
+      //
+      setAddSequenceNode([
+        {
+          id: "add-sequence-end",
+          type: "add-sequence-end",
+          position: { x: addSequenceX, y: 400 },
+          data: {},
+        },
+      ]);
+      //
+    } else {
+      const lastSequence = sequenceNode[sequenceNode.length - 1];
+      //
 
- 
+      setEdges((prev) => {
+        const getAddEdge = prev.filter(
+          (edge) => edge.id !== "add-sequence-end"
+        );
+
+        const newAddEdge = {
+          id: "add-sequence-end",
+          type: "step",
+          source: lastSequence.id,
+          target: "add-sequence-end",
+          style: edgesStyle,
+        };
+
+        return [...getAddEdge, newAddEdge];
+      });
+
+      setAddSequenceNode(() => [
+        {
+          id: "add-sequence-end",
+          type: "add-sequence-end",
+          position: { x: addSequenceX, y: lastSequence.position.y + 200 },
+          data: {},
+        },
+      ]);
+    }
+  }, [sequenceNode]);
 
   return (
     <div className="relative w-[90%] h-[75vh] flex justify-center items-center bg-[#F7F5F1]">

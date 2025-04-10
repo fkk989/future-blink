@@ -1,12 +1,9 @@
-// @ts-nocheck
-
-import { memo, useCallback } from "react";
+import { useCallback } from "react";
 import { Handle, Position, NodeProps } from "@xyflow/react";
-import { IoIosAdd } from "react-icons/io"; // Optional icon library
 import { useReactFlowContext } from "../../../context/ReactFlowContext";
 
-export const SequenceNode = ({ id: currentLeadId, data }: NodeProps) => {
-  const { sequence, setSequence, setSequenceNode, sequenceNode } =
+export const SequenceNode = ({ id: currentNodeId, data }: NodeProps) => {
+  const { setSequence, setSequenceNode, sequenceNode, setEdges } =
     useReactFlowContext();
 
   const delayInMinutes =
@@ -14,14 +11,52 @@ export const SequenceNode = ({ id: currentLeadId, data }: NodeProps) => {
     data?.delayTimeInMilleseconds && data.delayTimeInMilleseconds / (1000 * 60);
 
   const removeSequence = useCallback(() => {
+    //
     setSequence((prev) => {
-      const filterLeads = prev.filter((lead) => lead.id !== currentLeadId);
-      return filterLeads;
+      const filteredSequence = prev.filter((sequence) => {
+        if (data.type === "DELAY") return sequence.id !== data.id;
+        if (data.type === "EMAIL")
+          return sequence.emailTemplate !== data?.templateId;
+      });
+      return filteredSequence;
     });
 
     setSequenceNode((prev) => {
-      const filterLeads = prev.filter((lead) => lead.id !== currentLeadId);
-      return filterLeads;
+      // saving previous node to connect to the
+      const filteredSequenceNode = prev.filter(
+        (sequence) => sequence.id !== data.id
+      );
+
+      const finalSequence = filteredSequenceNode.map((node, index) => {
+        // setting node height
+        const positionY = 180 * index + 350;
+        return { ...node, position: { ...node.position, y: positionY } };
+      });
+      console.log("filteredd sequence", finalSequence);
+
+      return finalSequence;
+    });
+
+    setEdges((prevEdges) => {
+      const incoming = prevEdges.find((edge) => edge.target === currentNodeId);
+      const outgoing = prevEdges.find((edge) => edge.source === currentNodeId);
+
+      const newEdges = prevEdges.filter(
+        (edge) =>
+          (edge.source !== currentNodeId && edge.target !== currentNodeId) ||
+          edge.id !== currentNodeId
+      );
+
+      if (incoming && outgoing) {
+        newEdges.push({
+          id: `${Date.now()}`,
+          source: incoming.source,
+          target: outgoing.target,
+          type: "step",
+        });
+      }
+
+      return newEdges;
     });
   }, [sequenceNode]);
 
@@ -39,13 +74,14 @@ export const SequenceNode = ({ id: currentLeadId, data }: NodeProps) => {
         </button>
       </div>
       {data?.type === "EMAIL" && (
-        <div className=" font-medium text-gray-700">
-          Email template {data?.template}
-        </div>
+        <>
+          <div className=" font-medium text-gray-700">Email template:</div>
+          <div>{data?.template as string}</div>
+        </>
       )}
       {data?.type === "DELAY" && (
         <div className=" font-medium text-gray-700">
-          Delay of {delayInMinutes} Minutes
+          Delay of {delayInMinutes as string} Minutes
         </div>
       )}
 

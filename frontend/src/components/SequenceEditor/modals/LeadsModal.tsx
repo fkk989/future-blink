@@ -20,26 +20,28 @@ export const LeadsModal: React.FC<DropdownProp> = (prop) => {
     (list: any) => {
       // increasing
       setLeads((prev) => [...prev, list._id]);
-      const positionX =
-        leadsNode.length !== 0 ? 350 * (leadsNode.length + 1) : 450;
       //
+      const positionX = 250 * leadsNode.length + 450;
+      //
+
+      const leadNodeId = Date.now();
 
       setLeadNode((pre) => [
         ...pre,
         {
-          id: list._id,
+          id: `${leadNodeId}`,
           type: "lead-node",
           position: { x: positionX, y: 0 },
-          data: { name: list.name },
+          data: { id: list._id, name: list.name },
         },
       ]);
 
       setEdges((pre) => [
         ...pre,
         {
-          id: list._id,
+          id: `${leadNodeId}`,
           type: "step",
-          source: list._id,
+          source: `${leadNodeId}`,
           target: SequenceStartId,
           style: edgesStyle,
         },

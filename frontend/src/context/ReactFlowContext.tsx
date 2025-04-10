@@ -9,6 +9,7 @@ import {
 } from "@xyflow/react";
 import { createContext, useCallback, useContext, useState } from "react";
 import { SequenceNode } from "../utils/types";
+import { addSequenceX } from "../utils/constants";
 
 //
 interface ReactFlowContext {
@@ -32,6 +33,8 @@ interface ReactFlowContext {
   setSequence: React.Dispatch<React.SetStateAction<SequenceNode[]>>;
   leads: string[];
   setLeads: React.Dispatch<React.SetStateAction<string[]>>;
+  addSequenceNode: Node[];
+  setAddSequenceNode: React.Dispatch<React.SetStateAction<Node[]>>;
 }
 
 const ReactFlowContext = createContext<ReactFlowContext | null>(null);
@@ -59,6 +62,15 @@ export const ReactFlowContextProvider = ({
     [setEdges]
   );
 
+  const [addSequenceNode, setAddSequenceNode] = useNodesState<Node>([
+    {
+      id: "add-sequence-end",
+      type: "add-sequence-end",
+      position: { x: addSequenceX, y: 400 },
+      data: {},
+    },
+  ]);
+
   return (
     <ReactFlowContext.Provider
       value={{
@@ -72,6 +84,8 @@ export const ReactFlowContextProvider = ({
         sequenceNode,
         setSequenceNode,
         onChangeSequenceNode,
+        addSequenceNode,
+        setAddSequenceNode,
         edges,
         setEdges,
         onEdgesChange,

@@ -53,6 +53,9 @@ export const useGetList = () => {
 
 export const userCreateList = (listName: string, getListData: any) => {
   const createList = useCallback(async () => {
+    //
+    toast.loading("Creating List", { id: "creating-list" });
+    //
     const userToken = getUserToke();
     try {
       await axios.post(
@@ -64,8 +67,12 @@ export const userCreateList = (listName: string, getListData: any) => {
           },
         }
       );
+      toast.success("List created", { id: "creating-list" });
       getListData();
+      //
     } catch (error: any) {
+      //
+      toast.error("Error creating list", { id: "creating-list" });
       console.log("error creating List", error.message);
     }
   }, [listName]);

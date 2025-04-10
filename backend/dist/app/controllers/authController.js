@@ -121,7 +121,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { email, password } = req.body;
         const user = yield user_1.User.findOne({ email: email.trim() });
         if (!user) {
-            res.status(400).json((0, helpers_1.createResponse)(false, "Incorrect Email", { errors: { email: "Incorrect Email" } }));
+            res.status(400).json((0, helpers_1.createResponse)(false, "User Not found with this email", { errors: { email: "User Not found with this email" } }));
             return;
         }
         // 

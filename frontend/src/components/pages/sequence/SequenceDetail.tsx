@@ -6,8 +6,6 @@ import {
 import { SequenceEditor } from "../../SequenceEditor/Editor";
 import { useReactFlowContext } from "../../../context/ReactFlowContext";
 import toast from "react-hot-toast";
-import { useEffect } from "react";
-import { edgesStyle, SequenceStartId } from "../../../utils/constants";
 
 export const SequenceDetails = () => {
   const navigate = useNavigate();
@@ -15,41 +13,13 @@ export const SequenceDetails = () => {
   const { id: sequencId } = useParams();
   const { sequence } = useGetSequenceById(sequencId!);
   const {
-    sequenceNode,
-    setEdges,
     scheduledAt,
     setScheduledAt,
     leads,
     sequence: inputSequence,
   } = useReactFlowContext();
 
-  // setting Add sequence node edge
-  useEffect(() => {
-    if (sequenceNode.length === 0) {
-      setEdges((prev) => [
-        ...prev,
-        {
-          id: "add-sequence-end",
-          type: "step",
-          source: SequenceStartId,
-          target: "add-sequence-end",
-          style: edgesStyle,
-        },
-      ]);
-    } else {
-      const lastSequenceId = sequenceNode[sequenceNode.length].id;
-      setEdges((prev) => [
-        ...prev,
-        {
-          id: "add-sequence-end",
-          type: "step",
-          source: lastSequenceId,
-          target: "add-sequence-end",
-          style: edgesStyle,
-        },
-      ]);
-    }
-  }, []);
+  
 
   return (
     <div>

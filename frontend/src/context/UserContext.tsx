@@ -26,7 +26,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
     try {
       const res = (
-        await axios.get(`${BACKEND_URL}/auth/user-login-status`, {
+        await axios.get(`${BACKEND_URL}/auth`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

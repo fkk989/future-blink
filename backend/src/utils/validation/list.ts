@@ -3,6 +3,7 @@ import { z } from "zod";
 export const leadInputSchema = z.object({
   name: z.string({ required_error: "name is required" }).min(1),
 });
+
 export const listInputSchema = z.object({
   data: z.array(
     z.record(z.string()),

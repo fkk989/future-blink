@@ -3,11 +3,11 @@ export const BACKEND_URL = "https://future-blink.onrender.com/api"
 import { Node } from "@xyflow/react";
 
 export const addLeadX = 200
-
+export const addSequenceX = 290;
 
 export const defaultNodes: Node[] = [
   {
-    id: "1",
+    id: "add-lead",
     type: "add-lead",
     position: { x: 200, y: 0 },
     data: { label: "Leads from\nvery new List" },

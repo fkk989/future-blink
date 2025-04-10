@@ -11,7 +11,11 @@ export const SequencePage: React.FC<{}> = () => {
 
   const { sequences, getSequences } = useGetSequence();
 
-  const { createSequence } = useCreateSequence(sequenceName, getSequences);
+  const { createSequence } = useCreateSequence(
+    sequenceName,
+    getSequences,
+    setSequenceName
+  );
 
   return (
     <div className="w-full flex flex-col items-center">

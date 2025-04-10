@@ -9,7 +9,7 @@ import { User } from "../../models/user";
 
 export const authRouter = Router()
 
-authRouter.get("/user-login-status", verifyUserMiddleware(["ALL"]), async (req: AuthenticatedRequest, res) => {
+authRouter.get("/", verifyUserMiddleware(["ALL"]), async (req: AuthenticatedRequest, res) => {
   const logedUserId = req.user?.userId!
   const user = await User.findById(logedUserId)
   if (!user) {

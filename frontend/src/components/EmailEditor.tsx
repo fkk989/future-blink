@@ -1,4 +1,4 @@
-import {  useRef, useState } from "react";
+import { useRef, useState } from "react";
 import EmailEditor, { EditorRef, EmailEditorProps } from "react-email-editor";
 import toast from "react-hot-toast";
 import { updateTemplate } from "../hooks/email";
@@ -17,12 +17,17 @@ export const EmailEditorComponent = ({
 
   //
   const exportHtml = () => {
-    const unlayer = emailEditorRef.current?.editor;
+    try {
+      const unlayer = emailEditorRef.current?.editor;
 
-    unlayer?.exportHtml((data) => {
-      const { html: htmlBody } = data;
-      setHtml(htmlBody);
-    });
+      unlayer?.exportHtml((data) => {
+        const { html: htmlBody } = data;
+        setHtml(htmlBody);
+      });
+      toast.success("template saved", { id: "exporting-html" });
+    } catch (error) {
+      toast.error("Error saving template", { id: "exporting-html" });
+    }
   };
 
   const onReady: EmailEditorProps["onReady"] = () => {
@@ -53,6 +58,12 @@ export const EmailEditorComponent = ({
           className="cursor-pointer inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors mr-[80px]"
           onClick={(e) => {
             e.preventDefault();
+            if (!html) {
+              return toast.error(
+                "Please click on export button to save your template"
+              );
+            }
+            //
             if (subject.length === 0) {
               return toast.error("Please give a subject", {
                 id: "update-template",
@@ -70,7 +81,9 @@ export const EmailEditorComponent = ({
       <div>
         <button
           className="cursor-pointer inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors"
-          onClick={exportHtml}
+          onClick={() => {
+            exportHtml();
+          }}
         >
           Export HTML
         </button>

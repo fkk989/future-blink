@@ -29,6 +29,7 @@ export const useGetEmailTemplate = () => {
 };
 export const userCreateTemplate = (templateName: string, getTemplate: any) => {
   const createTemplate = useCallback(async () => {
+    toast.loading("creating template", { id: "creating-template" });
     const userToken = getUserToke();
     try {
       await axios.post(
@@ -40,8 +41,10 @@ export const userCreateTemplate = (templateName: string, getTemplate: any) => {
           },
         }
       );
+      toast.success("creating template", { id: "creating-template" });
       getTemplate();
     } catch (error: any) {
+      toast.error("creating template", { id: "creating-template" });
       console.log("error creating List", error.message);
     }
   }, [templateName]);

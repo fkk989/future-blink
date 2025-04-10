@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Papa from "papaparse";
 
 type CsvData = Record<string, string>; // Or define a more specific type if you know the headers
@@ -24,8 +24,6 @@ const UploadButton: React.FC<Props> = ({ onChange }) => {
 };
 
 const CsvUploader = ({ setListData }: { setListData: any }) => {
-  const [_, setData] = useState<CsvData[]>([]);
-
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -34,7 +32,6 @@ const CsvUploader = ({ setListData }: { setListData: any }) => {
       header: true,
       skipEmptyLines: true,
       complete: (result) => {
-        setData(result.data);
         console.log("Parsed CSV Data:", result.data);
         setListData(result.data);
       },

@@ -147,7 +147,7 @@ export const login = async (req: Request<{}, {}, UserLoginInput>, res: Response)
 
     const user = await User.findOne({ email: email.trim() })
     if (!user) {
-      res.status(400).json(createResponse(false, "Incorrect Email", { errors: { email: "Incorrect Email" } }))
+      res.status(400).json(createResponse(false, "User Not found with this email", { errors: { email: "User Not found with this email" } }))
       return
     }
 

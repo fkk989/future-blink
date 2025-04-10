@@ -50,8 +50,13 @@ export const useGetSequence = () => {
   return { sequences, setSequences, getSequences };
 };
 
-export const useCreateSequence = (sequenceName: string, getSequences: any) => {
+export const useCreateSequence = (
+  sequenceName: string,
+  getSequences: any,
+  setSequenceName: any
+) => {
   const createSequence = useCallback(async () => {
+    toast.loading("creating sequence", { id: "creating-sequence" });
     const userToken = getUserToke();
     try {
       await axios.post(
@@ -63,9 +68,17 @@ export const useCreateSequence = (sequenceName: string, getSequences: any) => {
           },
         }
       );
+      //
+      setSequenceName("");
+      toast.success("creating sequence", { id: "creating-sequence" });
       getSequences();
+      //
     } catch (error: any) {
+      //
+      toast.error("error creating sequence", { id: "creating-sequence" });
+      setSequenceName("");
       console.log("error creating List", error.message);
+      //
     }
   }, [sequenceName]);
 

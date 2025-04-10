@@ -49,7 +49,7 @@ export const AddSequenceModal: React.FC<DropdownProp> = (prop) => {
         sequenceObj.emailTemplate = data._id;
       }
 
-      if (data.type == "DEALY") {
+      if (data.type == "DELAY") {
         // @ts-ignore
         sequenceObj.delayTimeInMilleseconds = data.delayTimeInMilleseconds;
       }
@@ -57,8 +57,7 @@ export const AddSequenceModal: React.FC<DropdownProp> = (prop) => {
       const updatedSequence = [...prev, sequenceObj];
       return updatedSequence;
     });
-    const positionY =
-      sequenceNode.length !== 0 ? 200 * (sequenceNode.length + 1) : 400;
+    const positionY = 180 * sequenceNode.length + 350;
     //
 
     setSequenceNode((pre) => [
@@ -72,6 +71,7 @@ export const AddSequenceModal: React.FC<DropdownProp> = (prop) => {
           type: data.type,
           template: data?.name,
           delayTimeInMilleseconds: data?.delayTimeInMilleseconds,
+          templateId: data?.templateId,
         },
       },
     ]);
@@ -149,6 +149,7 @@ export const AddSequenceModal: React.FC<DropdownProp> = (prop) => {
                         id: `${Date.now()}`,
                       });
                       setSequenceType(null);
+                      setOpenSequenceModal(false);
                     }}
                     className={`${buttonStyle} w-[150px]  mr-[40px] mt-[20px]`}
                   >
@@ -167,7 +168,8 @@ export const AddSequenceModal: React.FC<DropdownProp> = (prop) => {
                             addSequence({
                               ...emailTemplate,
                               type: "EMAIL",
-                              id: emailTemplate._id,
+                              id: `${Date.now()}`,
+                              templateId: emailTemplate._id,
                             });
                             setOpenSequenceModal(false);
                             setSequenceType(null);
