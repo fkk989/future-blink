@@ -1,5 +1,3 @@
-export const BACKEND_URL = "https://future-blink.onrender.com/api"
-
 import { Node } from "@xyflow/react";
 
 export const addLeadX = 200

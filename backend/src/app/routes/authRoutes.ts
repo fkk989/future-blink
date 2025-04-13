@@ -19,7 +19,7 @@ authRouter.get("/", verifyUserMiddleware(["ALL"]), async (req: AuthenticatedRequ
 
   user.password = ""
 
-  res.status(200).json(createResponse(true, "User Is logedIn", { data: { user } }))
+  res.status(200).json(createResponse(true, "User Is logedIn", { data: user }))
 })
 
 authRouter.post("/send-otp", validate(otpSchema), sendOtp)

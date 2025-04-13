@@ -1,7 +1,8 @@
 import axios from "axios";
 import { createContext, useContext, useState, ReactNode } from "react";
-import { BACKEND_URL } from "../utils/constants";
 
+// 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 export interface User {
   id: string;
   name: string;

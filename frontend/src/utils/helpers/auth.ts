@@ -3,12 +3,11 @@ import { SetStateAction } from "react";
 import { LoginData } from "../../components/pages/auth/Login";
 import { sendOTP } from "./index";
 import axios from "axios";
-import { BACKEND_URL } from "../constants";
 import toast from "react-hot-toast";
 import { LogedUser } from "../types";
 import { NavigateFunction } from "react-router-dom";
 
-
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 interface HandleSubmit<T extends "signup" | "login"> {
   resetErrorState: () => void, formData: T extends "signup" ? SignUpData : LoginData,
   setShowOtpFrom: React.Dispatch<SetStateAction<boolean>>,

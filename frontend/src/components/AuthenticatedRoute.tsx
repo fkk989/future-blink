@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 
@@ -10,15 +11,27 @@ export default function AuthenticatedRoute({ children }: Props) {
 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
-  const checkAuth = useCallback(() => {
+  const checkAuth = useCallback(async () => {
     const token = localStorage.getItem("user-token");
-
     if (!token) {
       setIsAuthenticated(false);
       return;
     }
-
-    setIsAuthenticated(true);
+    try {
+      const data = (
+        await axios.get(`${import.meta.env.VITE_BACKEND_URL}/auth`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+      ).data;
+      if (data.success) {
+        setIsAuthenticated(true);
+        return;
+      }
+    } catch (error) {
+      setIsAuthenticated(false);
+    }
   }, []);
   //
   useEffect(() => {
@@ -30,7 +43,7 @@ export default function AuthenticatedRoute({ children }: Props) {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" replace={true} />;
   }
 
   return children;

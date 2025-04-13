@@ -13,6 +13,7 @@ import { SequencePage } from "./components/pages/sequence/SequencePage";
 import { SequenceDetails } from "./components/pages/sequence/SequenceDetail";
 
 function App() {
+  console.log("BACKEND_URL", import.meta.env.VITE_BACKEND_URL);
   return (
     <Router>
       <Routes>

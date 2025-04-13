@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { getUserToke } from "../utils/helpers";
 import axios from "axios";
-import { BACKEND_URL } from "../utils/constants";
 import toast from "react-hot-toast";
+
+//
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 export const useGetListbyId = (listId: string) => {
   const [listData, setListData] = useState<any>();
