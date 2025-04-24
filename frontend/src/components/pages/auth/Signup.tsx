@@ -58,6 +58,7 @@ export default function SignupPage() {
           <OtpForm
             email={formData.email}
             onSuccess={() => {
+              console.log("otp submitted");
               navigate("/login");
             }}
           />

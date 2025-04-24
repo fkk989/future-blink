@@ -1,7 +1,7 @@
 import axios from "axios";
 import { createContext, useContext, useState, ReactNode } from "react";
 
-// 
+//
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 export interface User {
   id: string;
@@ -34,7 +34,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         })
       ).data;
       if (res.success) {
-        setUser(res.data.user);
+        setUser(res.data);
       }
     } catch (e: any) {
       console.log("error:", e);

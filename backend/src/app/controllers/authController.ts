@@ -24,7 +24,7 @@ export const sendOtp = async (req: Request<{}, {}, Omit<UserSignupInput, "passwo
       const minutesLeft = otpRateLimit.expiresIn.minutes
       const secondsLeft = otpRateLimit.expiresIn.seconds
 
-      res.status(400).json(createResponse(false, `Please wait for ${minutesLeft > 0 && minutesLeft + " Minutes"} and ${secondsLeft} seconds `))
+      res.status(400).json(createResponse(false, `Please wait for ${minutesLeft > 0 && minutesLeft + " Minutes"} and ${secondsLeft} seconds to send otp again`))
       return
     }
 
@@ -156,7 +156,7 @@ export const login = async (req: Request<{}, {}, UserLoginInput>, res: Response)
       const tempUser = user
       tempUser.password = ""
       // here I am sending true and user details so that user would know that he should verity him first
-      res.status(200).json(createResponse(true, "Email not verified", { data: { tempUser }, errors: { email: "User not verified" } }))
+      res.status(200).json(createResponse(true, "Email not verified", { data: { user: tempUser }, errors: { email: "User not verified" } }))
       return
     }
 

@@ -25,14 +25,15 @@ export const handleSignup = async ({ resetErrorState, formData, setShowOtpFrom, 
     ).data;
 
     if (response.success) {
+      toast.success("User created", { id: "sign-up" })
       await sendOTP(formData.email, formData.name, () => {
         setShowOtpFrom(true);
       });
-      toast.success("Signed up successfully", { id: "sign-up" })
+
     }
     //
   } catch (error: any) {
-    toast.error("Signed up successfully", { id: "sign-up" })
+    toast.error("Error signing up", { id: "sign-up" })
     console.log(error.response);
     if (error.response?.data?.errors) {
       setErrorState((pre) => ({ ...pre, ...error.response.data.errors }));
@@ -58,6 +59,7 @@ export const handleLogin = async ({ navigate, resetErrorState, formData, setShow
       // 
 
       if (!response.data.user.isVerified) {
+        toast.error("Please Verify your email first", { id: "log-in" })
         // if user is not verified seding otp again
         await sendOTP(formData.email, response.data.user.name, () => {
           setShowOtpFrom(true);

@@ -57,7 +57,14 @@ export default function LoginForm() {
           <OtpForm
             email={formData.email}
             onSuccess={() => {
-              navigate("/sequence");
+              handleLogin({
+                resetErrorState,
+                formData,
+                setShowOtpFrom,
+                setErrorState,
+                updateUser,
+                navigate,
+              });
             }}
           />
         ) : (

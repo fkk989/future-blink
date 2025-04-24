@@ -26,7 +26,7 @@ const sendOtp = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (otpRateLimit.limiteExceded) {
             const minutesLeft = otpRateLimit.expiresIn.minutes;
             const secondsLeft = otpRateLimit.expiresIn.seconds;
-            res.status(400).json((0, helpers_1.createResponse)(false, `Please wait for ${minutesLeft > 0 && minutesLeft + " Minutes"} and ${secondsLeft} seconds `));
+            res.status(400).json((0, helpers_1.createResponse)(false, `Please wait for ${minutesLeft > 0 && minutesLeft + " Minutes"} and ${secondsLeft} seconds to send otp again`));
             return;
         }
         //setting rate limit on user, this will either set or increment rateLimit
@@ -129,7 +129,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             const tempUser = user;
             tempUser.password = "";
             // here I am sending true and user details so that user would know that he should verity him first
-            res.status(200).json((0, helpers_1.createResponse)(true, "Email not verified", { data: { tempUser }, errors: { email: "User not verified" } }));
+            res.status(200).json((0, helpers_1.createResponse)(true, "Email not verified", { data: { user: tempUser }, errors: { email: "User not verified" } }));
             return;
         }
         // Comparing passowrd

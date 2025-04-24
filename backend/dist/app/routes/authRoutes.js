@@ -27,7 +27,7 @@ exports.authRouter.get("/", (0, verifyUser_1.verifyUserMiddleware)(["ALL"]), (re
         return;
     }
     user.password = "";
-    res.status(200).json((0, helpers_1.createResponse)(true, "User Is logedIn", { data: { user } }));
+    res.status(200).json((0, helpers_1.createResponse)(true, "User Is logedIn", { data: user }));
 }));
 exports.authRouter.post("/send-otp", (0, validate_1.validate)(auth_1.otpSchema), authController_1.sendOtp);
 exports.authRouter.post("/verify-email", (0, validate_1.validate)(auth_1.emailVerificationSchema), authController_1.verifyEmail);
